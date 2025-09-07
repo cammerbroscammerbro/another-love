@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free YouTube Shorts Downloader – HD, No Watermark Online</title>
+  <meta name="description" content="Download YouTube Shorts in HD online for free. No watermark, no app, no registration. Try our YouTube Shorts Downloader now!">
+  <style>
+    body { font-family: Arial; background: #fff; color:#333; margin:0; padding:0; }
+    header { background:#ff66b2; color:white; text-align:center; padding:2rem 1rem; }
+    header h1 { margin:0; font-size:2rem; }
+    header p { margin-top:0.5rem; font-size:1rem; }
+    main { max-width:600px; margin:2rem auto; padding:0 1rem; }
+    .downloader input { width:100%; padding:0.8rem; font-size:1rem; margin-bottom:1rem; border:2px solid #ff66b2; border-radius:5px; }
+    .downloader button { width:100%; padding:0.8rem; font-size:1rem; background:#ff66b2; color:white; border:none; border-radius:5px; cursor:pointer; transition:0.3s; }
+    .downloader button:hover { background:#ff3399; }
+    #result { margin-top:1rem; }
+    .faq h2 { color:#ff66b2; margin-bottom:1rem; }
+    .faq h3 { margin:1rem 0 0.5rem; }
+    .faq p { margin:0 0 1rem; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>YouTube Shorts Downloader</h1>
+  <p>Download YouTube Shorts in HD quickly and easily. No app required!</p>
+</header>
+
+<main>
+  <section class="downloader">
+    <input type="text" id="urlInput" placeholder="Paste YouTube Shorts URL here">
+    <button onclick="getDownloadLink()">Download</button>
+    <div id="result"></div>
+  </section>
+
+  <section class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div>
+      <h3>How do I download YouTube Shorts?</h3>
+      <p>Paste the Shorts link in the input box and click "Download". The video will start downloading immediately.</p>
+    </div>
+    <div>
+      <h3>Is it free to use?</h3>
+      <p>Yes, this tool is completely free.</p>
+    </div>
+    <div>
+      <h3>Can I download YouTube Shorts in MP3?</h3>
+      <p>Currently, this tool downloads video with audio. MP3-only downloads may be added later.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+async function getDownloadLink() {
+  const url = document.getElementById('urlInput').value;
+  const result = document.getElementById('result');
+  if (!url) {
+    result.innerHTML = '<p style="color:red;">Please enter a URL!</p>';
+    return;
+  }
+
+  result.innerHTML = '<p>⏳ Fetching download link...</p>';
+
+  try {
+    const response = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      const info = data.data;
+
+      // Auto-download via proxy
+      const a = document.createElement('a');
+      a.href = `/download-proxy?video_url=${encodeURIComponent(info.url)}`;
+      a.download = 'shorts_video.mp4';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      result.innerHTML = `<p>✅ Download started for ${info.quality} [${info.ext}]</p>`;
+    } else {
+      result.innerHTML = `<p style="color:red;">${data.message}</p>`;
+    }
+  } catch(err) {
+    result.innerHTML = '<p style="color:red;">Error fetching download link.</p>';
+    console.error(err);
+  }
+}
+</script>
+</body>
+</html>
